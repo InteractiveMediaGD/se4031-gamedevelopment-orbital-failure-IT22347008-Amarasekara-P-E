@@ -8,6 +8,7 @@ public class VoiceManager : MonoBehaviour
 {
     [Header("System References")]
     public OxygenSystem oxygenSystem;
+    public BayDoor activeDoor;
 
     [Header("VR Input")]
     [Tooltip("Bind this to the Left Controller Trigger")]
@@ -32,6 +33,9 @@ public class VoiceManager : MonoBehaviour
         commandActions.Add("compress atmosphere", CommandCompressAtmosphere);
         commandActions.Add("synchronize shield grid", CommandSyncShields);
         commandActions.Add("reroute life support", CommandReroutePower);
+
+        commandActions.Add("open bay doors", CommandOpenDoor);
+        commandActions.Add("close bay doors", CommandCloseDoor);
 
         keywordRecognizer = new KeywordRecognizer(commandActions.Keys.ToArray());
         keywordRecognizer.OnPhraseRecognized += OnSpeechRecognized;
@@ -126,6 +130,36 @@ public class VoiceManager : MonoBehaviour
         {
             keywordRecognizer.Stop();
             keywordRecognizer.Dispose();
+        }
+    }
+
+    private void CommandOpenDoor()
+    {
+        if (activeDoor != null)
+        {
+            Debug.Log("Executing: Open Bay Doors");
+            activeDoor.OpenDoor();
+            PlayFeedback(successBeep);
+        }
+        else
+        {
+            Debug.Log("FAILED: Not in range of a door terminal.");
+            PlayFeedback(errorBuzz);
+        }
+    }
+
+    private void CommandCloseDoor()
+    {
+        if (activeDoor != null)
+        {
+            Debug.Log("Executing: Close Bay Doors");
+            activeDoor.CloseDoor();
+            PlayFeedback(successBeep);
+        }
+        else
+        {
+            Debug.Log("FAILED: Not in range of a door terminal.");
+            PlayFeedback(errorBuzz);
         }
     }
 }
